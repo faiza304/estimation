@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Construction Estimator & Summary</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('Screenshot 2024-01-08 at 2.07.36 PM-min.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: #fff;
+    }
+    .container {
+      background-color: rgba(0, 0, 0, 0.8);
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+    }
+    label, input, select, button, table, h2 {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+    }
+    input, select, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: #222;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      color: #fff;
+      text-align: center;
+    }
+    th { background-color: #333; }
+    .highlight {
+      background-color: #2d4f2d;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    #summarySection { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container" id="formSection">
+    <h1>Construction Material Estimator</h1>
+    <label for="name">Name:</label>
+    <input type="text" id="name">
+    <label for="email">Email:</label>
+    <input type="email" id="email">
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone">
+    <label for="date">Purchase Date:</label>
+    <input type="date" id="date">
+    <label for="material">Material:</label>
+    <select id="material" onchange="populateCompanies()">
+      <option value="">--Select Material--</option>
+    </select>
+    <label for="company">Company:</label>
+    <select id="company"></select>
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity">
+    <label for="unit">Unit:</label>
+    <select id="unit"></select>
+    <label for="budget">Your Budget (₹):</label>
+    <input type="number" id="budget">
+    <button onclick="addItem()">Add Material</button>
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Company</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="generateSummary()">Generate Summary</button>
+  </div>
+  <div class="container" id="summarySection">
+    <h1>Summary</h1>
+    <div id="summaryContent"></div>
+    <button onclick="goBack()">🔙 Back to Estimator</button>
+  </div>
+  <script>
+    const prices = {
+      Cement: {
+        "UltraTech": { price: 325, phone: "+91-800-325-0001" },
+        "JK Cement": { price: 310, phone: "+91-800-310-0004" },
+        "Birla": { price: 320, phone: "+91-800-320-0005" },
+        "Shree": { price: 300, phone: "+91-800-300-0006" },
+        "Ambuja": { price: 315, phone: "+91-800-315-0007" }
+      },
+      Bricks: {
+        "Red Bricks": { price: 5.5, phone: "+91-800-550-0002" },
+        "Fly Ash Bricks": { price: 6, phone: "+91-800-600-0004" },
+        "Clay Bricks": { price: 5.8, phone: "+91-800-580-0005" },
+        "Eco Bricks": { price: 6.2, phone: "+91-800-620-0006" },
+        "Solid Blocks": { price: 6.5, phone: "+91-800-650-0007" }
+      },
+      Steel: {
+        "Tata": { price: 43000, phone: "+91-800-430-0001" },
+        "JSW": { price: 41500, phone: "+91-800-415-0002" },
+        "SAIL": { price: 40500, phone: "+91-800-405-0003" },
+        "Jindal": { price: 41000, phone: "+91-800-410-0004" },
+        "Essar": { price: 42000, phone: "+91-800-420-0005" }
+      },
+      Sand: {
+        "River Sand": { price: 1650, phone: "+91-800-165-0001" },
+        "M-Sand": { price: 1550, phone: "+91-800-155-0002" },
+        "White Sand": { price: 1700, phone: "+91-800-170-0003" },
+        "Brick Sand": { price: 1500, phone: "+91-800-150-0004" },
+        "Plaster Sand": { price: 1580, phone: "+91-800-158-0005" }
+      },
+      Paint: {
+        "Asian Paints": { price: 250, phone: "+91-800-250-0001" },
+        "Berger": { price: 220, phone: "+91-800-220-0002" },
+        "Nerolac": { price: 240, phone: "+91-800-240-0003" },
+        "Dulux": { price: 260, phone: "+91-800-260-0004" },
+        "Kansai Nerolac": { price: 230, phone: "+91-800-230-0005" }
+      }
+    };
+
+    const units = {
+      Cement: "bags",
+      Bricks: "pieces",
+      Steel: "tons",
+      Sand: "tons",
+      Paint: "liters"
+    };
+
+    let items = [];
+
+    function populateCompanies() {
+      const mat = document.getElementById('material').value;
+      const company = document.getElementById('company');
+      const unit = document.getElementById('unit');
+      company.innerHTML = '';
+      unit.innerHTML = '';
+      if (prices[mat]) {
+        for (let c in prices[mat]) {
+          company.add(new Option(c, c));
+        }
+        unit.add(new Option(units[mat], units[mat]));
+      }
+    }
+
+    function addItem() {
+      const material = document.getElementById('material').value;
+      const company = document.getElementById('company').value;
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const unit = document.getElementById('unit').value;
+      if (!material || !company || isNaN(quantity)) return alert("Fill all fields");
+      const price = prices[material][company].price;
+      const total = price * quantity;
+      items.push({ material, company, quantity, unit, price, total });
+      renderTable();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#itemsTable tbody');
+      tbody.innerHTML = '';
+      items.forEach((item, index) => {
+        tbody.innerHTML += `<tr><td>${item.material}</td><td>${item.company}</td><td>${item.quantity}</td><td>${item.unit}</td><td>₹${item.price}</td><td>₹${item.total.toFixed(2)}</td><td><button onclick="removeItem(${index})">❌</button></td></tr>`;
+      });
+    }
+
+    function generateSummary() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const date = document.getElementById('date').value;
+      const budget = parseFloat(document.getElementById('budget').value);
+      if (!name || !email || !phone || !date || isNaN(budget)) return alert("Please fill all fields");
+
+      const est = items.reduce((sum, item) => sum + item.total, 0);
+      const delivery = items.reduce((sum, item) => {
+        if (item.unit === 'pieces') return sum + (item.quantity / 1000) * 200;
+        else return sum + (item.quantity / 10) * 200;
+      }, 0);
+
+      const total = est + delivery;
+
+      let summary = `<h2>Customer Info</h2><pre>Name: ${name}
+Email: ${email}
+Phone: ${phone}
+Date: ${new Date(date).toLocaleDateString()}</pre>`;
+
+      summary += `<h2>Materials</h2><table><thead><tr><th>Material</th><th>Company</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead><tbody>`;
+      items.forEach(i => {
+        summary += `<tr><td>${i.material}</td><td>${i.company}</td><td>${i.quantity}</td><td>${i.unit}</td><td>₹${i.price}</td><td>₹${i.total.toFixed(2)}</td></tr>`;
+      });
+      summary += `</tbody></table>`;
+
+      summary += `<h2>Totals</h2><pre>Subtotal: ₹${est.toFixed(2)}
+Delivery Charges: ₹${delivery.toFixed(2)}
+Total Estimate: ₹${total.toFixed(2)}
+Budget: ₹${budget}
+Status: ${total <= budget ? '✅ Within Budget' : '❌ Over Budget'}</pre>`;
+
+      if (total <= budget) {
+        summary += `<h2>Best Supplier Suggestions</h2><table><thead><tr><th>Material</th><th>Best Company</th><th>Price</th><th>Contact</th></tr></thead><tbody>`;
+        const suggested = {};
+        items.forEach(i => {
+          if (!suggested[i.material]) {
+            const best = Object.entries(prices[i.material]).sort((a,b)=>a[1].price - b[1].price)[0];
+            summary += `<tr><td>${i.material}</td><td>${best[0]}</td><td>₹${best[1].price}</td><td>${best[1].phone}</td></tr>`;
+            suggested[i.material] = true;
+          }
+        });
+        summary += `</tbody></table>`;
+      }
+
+      document.getElementById('summaryContent').innerHTML = summary;
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('summarySection').style.display = 'block';
+    }
+
+    function goBack() {
+      document.getElementById('formSection').style.display = 'block';
+      document.getElementById('summarySection').style.display = 'none';
+    }
+
+    window.onload = () => {
+      const materialSelect = document.getElementById('material');
+      Object.keys(prices).forEach(mat => materialSelect.add(new Option(mat, mat)));
+    };
+  </script>
+</body>
+</html>

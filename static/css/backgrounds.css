@@ -1,0 +1,175 @@
+/**
+ * Construction Estimator - Background Styles
+ * Contains background-related styles and effects
+ */
+
+/* Main background */
+body {
+  position: relative;
+  background-color: #121212;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                    url("../images/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+/* Add overlay with gradient */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 80, 5, 0.4) 0%, 
+    rgba(18, 18, 18, 0.7) 50%, 
+    rgba(2, 136, 209, 0.4) 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Add subtle noise texture */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANESURBVGhD7ZpNaxNRFIbzJ2QlCK66cCEILly4cOFCEFy4cOFCEFy4cOFCEFy4cOFCEFy4cOFCKFiwUKFgwYKFCgULFVJIaZqmaZqmaZo0TZvM5PgeZ+JJmtxJZia3gTnwQJiZc+573jv3Y+5MKpFIJBKJRCKRSCQSicT/yY/WXrp5eZCe3Rin+1fH6GZtgK5W+qnS30uFnm7Kd3dRVyZDmXSaOlKpqCFrWMsePMUa9uJJLzrXRulpY4J+7+6L9P8eHKbXzSm6Ux+iYm8P2cCVzVK2s5MyHR3U3tZGra2tZoQ1rGUPnuLJXnrRnqHl1qxI/8fOLj1rTtJYXy/ZpLenR4Tr7OykbDZLuVyOCoUCDQ4O0vDwMI2MjNDo6CiNjY3R+Pg4TUxM0OTkJE1NTdH09DTNzMzQ7OwszczM0PT0NE1MTNDY2BiNjIxQqVSiQqFAuVyOstksdXR0UHt7O7W0tFBLS4u5jj14iif76cXHnTlR4NvWDt2tD5NtBgYGKJ/PU7FYpHK5TJVKharVKtVqNarX6zQxMUGNRoMmJyeNMTMzQ7Ozs2Z0w8zMjDFnZmbMXjzFk/30YnF7VhT4tLlNN2pDZJtyuWwKrFQqVK1WqdFoUL1ep7GxMRofHzejG2ZnZ2lubk6Mubk5Y87NzRlP8WQ/vXi/sSUKfNjYpmu1QbLN0NCQKXB0dJRGRkaoWq1SrVYzBY6Pj5vRDfPz87SwsCDGwsKCMRcWFoyneLKfXrz7tSkKvF3fpivVAbJNqVQyBZbLZRoeHqZKpULVapVqtZox3TA/P0+Li4tiLC4uGnNxcdF4iif76cXC2oYo8Hp1nS5V+sk2xWLRFFgqlahcLlOlUqFqtWpGN8zPz9PS0pIYS0tLxlxaWjKe4sl+evFyZU0UeLGyRhcr/WSbQqFgCiwWi1QqlahcLlOlUjGjGxYWFmh5eVmM5eVlYy4vLxtP8WQ/vXi2vCoKPF1apfOVPrJNPp83BRYKBSoWi1QqlahcLpvRDYuLi7SysiLGysqKMVdWVoyneLKfXjz+sSIKPFpcoXPlXrJNLpczBeZyOcrn81QoFKhYLJrRDUtLS7S6uirG6uqqMVdXV42neLKfXjz8viQKPPi2RGdLvYlEIpFIJBKJRCKRSCT+QSn6C/OtXtbYGNvAAAAAAElFTkSuQmCC");
+  opacity: 0.03;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Gradient overlay for containers */
+.container {
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(46, 125, 50, 0.05) 0%, 
+    rgba(30, 30, 30, 0) 50%, 
+    rgba(2, 136, 209, 0.05) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Card background effects */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(46, 125, 50, 0.05) 0%, 
+    rgba(30, 30, 30, 0) 50%, 
+    rgba(2, 136, 209, 0.05) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Spotlight effect on hover */
+.card:hover::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Background for dark sections */
+.dark-section {
+  background-color: rgba(18, 18, 18, 0.7);
+  position: relative;
+}
+
+.dark-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.2) 0%, 
+    rgba(0, 0, 0, 0) 50%, 
+    rgba(0, 0, 0, 0.2) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Animated gradient background */
+.gradient-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(46, 125, 50, 0.1) 0%, 
+    rgba(2, 136, 209, 0.1) 25%, 
+    rgba(245, 124, 0, 0.1) 50%, 
+    rgba(2, 136, 209, 0.1) 75%, 
+    rgba(46, 125, 50, 0.1) 100%);
+  background-size: 400% 400%;
+  animation: gradient-animation 15s ease infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Media queries for responsive backgrounds */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+}
+
+/* Print styles */
+@media print {
+  body, body::before, body::after,
+  .container::before, .card::before, .card::after,
+  .dark-section::before, .gradient-bg::before {
+    background: none !important;
+  }
+}

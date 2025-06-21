@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Construction Estimator & Summary</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/effects.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/backgrounds.css') }}?v=1.2">
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-light: #60ad5e;
+      --primary-dark: #005005;
+      --secondary-color: #37474f;
+      --secondary-light: #62727b;
+      --secondary-dark: #102027;
+      --text-light: #ffffff;
+      --text-dark: #212121;
+      --danger-color: #d32f2f;
+      --success-color: #388e3c;
+      --warning-color: #f57c00;
+      --info-color: #0288d1;
+    }
+    
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url("{{ url_for('static', filename='images/background.jpg') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background-color: rgba(24, 24, 24, 0.9);
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-light);
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background-color: var(--primary-color);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.3);
+    }
+    
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      margin-top: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    button i {
+      margin-right: 8px;
+    }
+    
+    table {
+      width: 100%;
+      margin-top: 25px;
+      border-collapse: collapse;
+      background: rgba(30, 30, 30, 0.9);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    th, td {
+      padding: 15px;
+      text-align: left;
+      color: var(--text-light);
+    }
+    
+    th {
+      background-color: var(--secondary-color);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: rgba(50, 50, 50, 0.5);
+    }
+    
+    tr:hover {
+      background-color: rgba(70, 70, 70, 0.7);
+    }
+    
+    .highlight {
+      background-color: rgba(46, 125, 50, 0.2);
+      padding: 15px;
+      margin-top: 25px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    #summarySection { 
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .flash-message {
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      background-color: var(--success-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .flash-message i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .flash-error {
+      background-color: var(--danger-color);
+    }
+    
+    .card {
+      background-color: rgba(40, 40, 40, 0.7);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .form-col {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .action-btn {
+      background: transparent;
+      color: white;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+      margin: 0;
+      box-shadow: none;
+      width: auto;
+    }
+    
+    .action-btn:hover {
+      color: var(--primary-light);
+      background: transparent;
+      box-shadow: none;
+    }
+    
+    .action-btn.delete {
+      color: var(--danger-color);
+    }
+    
+    .action-btn.delete:hover {
+      color: #ef5350;
+    }
+    
+    .price-tag {
+      font-weight: 600;
+      color: #4caf50;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .badge-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .badge-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      th, td {
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container page-enter gradient-bg" id="formSection">
+    <h1><i class="fas fa-calculator"></i> <span class="text-shimmer">Construction Material Estimator</span></h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {% if category == 'error' %}flash-error{% endif %} slide-up">
+            <i class="fas {% if category == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <form id="customerForm" method="POST" action="{{ url_for('save_estimate') }}">
+      <div class="card section-animate glass-effect">
+        <h2><i class="fas fa-user"></i> Customer Information</h2>
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="name"><i class="fas fa-user-tag"></i> Full Name:</label>
+              <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="email"><i class="fas fa-envelope"></i> Email Address:</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="phone"><i class="fas fa-phone"></i> Phone Number:</label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="date"><i class="fas fa-calendar-alt"></i> Purchase Date:</label>
+              <input type="date" id="date" name="date" required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="budget"><i class="fas fa-rupee-sign"></i> Your Budget (₹):</label>
+          <input type="number" id="budget" name="budget" placeholder="Enter your budget amount" min="1" required>
+        </div>
+      </div>
+      
+      <div class="card section-animate glass-effect" id="materialSection" style="animation-delay: 0.2s;">
+        <h2><i class="fas fa-tools"></i> Add Materials</h2>
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="material"><i class="fas fa-box"></i> Material Type:</label>
+              <select id="material" onchange="populateCompanies()">
+                <option value="">--Select Material--</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="company"><i class="fas fa-building"></i> Company/Brand:</label>
+              <select id="company">
+                <option value="">--Select Company--</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="quantity"><i class="fas fa-sort-amount-up"></i> Quantity:</label>
+              <input type="number" id="quantity" min="1" placeholder="Enter quantity">
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="unit"><i class="fas fa-weight"></i> Unit:</label>
+              <select id="unit">
+                <option value="">--Select Unit--</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <button type="button" onclick="addItem()" class="add-material-btn ripple">
+          <i class="fas fa-plus-circle icon-pulse"></i> Add Material to List
+        </button>
+      </div>
+      
+      <input type="hidden" id="itemsJson" name="items">
+      
+      <div class="card section-animate glass-effect" style="animation-delay: 0.3s;">
+        <h2><i class="fas fa-list"></i> Materials List</h2>
+        <div class="table-responsive">
+          <table id="itemsTable">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Company</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Price (₹)</th>
+                <th>Total (₹)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Items will be added here dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="materialsSummary" class="highlight" style="display: none;">
+          <div class="form-row">
+            <div class="form-col">
+              <p><strong>Items:</strong> <span id="itemCount">0</span></p>
+            </div>
+            <div class="form-col">
+              <p><strong>Subtotal:</strong> <span id="subtotalAmount" class="price-tag">₹0.00</span></p>
+            </div>
+            <div class="form-col">
+              <p><strong>Est. Delivery:</strong> <span id="deliveryAmount" class="price-tag">₹0.00</span></p>
+            </div>
+            <div class="form-col">
+              <p><strong>Total:</strong> <span id="totalAmount" class="price-tag">₹0.00</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button type="button" onclick="submitForm()" class="submit-btn ripple pulse">
+        <i class="fas fa-file-invoice"></i> Generate & Save Estimate
+      </button>
+    </form>
+  </div>
+  
+  <div class="container page-enter gradient-bg" id="summarySection">
+    <h1><i class="fas fa-clipboard-check"></i> Estimate Summary</h1>
+    <div id="summaryContent" class="card section-animate glass-effect gradient-border"></div>
+    <div class="button-group section-animate" style="animation-delay: 0.3s;">
+      <button onclick="goBack();" class="slide-left">
+        <i class="fas fa-arrow-left"></i> Back to Estimator
+      </button>
+      <button onclick="window.location.href='{{ url_for('view_estimates') }}';" class="slide-up">
+        <i class="fas fa-list-alt"></i> View All Estimates
+      </button>
+      <button onclick="window.print();" class="print-btn slide-right">
+        <i class="fas fa-print"></i> Print Estimate
+      </button>
+    </div>
+  </div>
+  <script>
+    // Material prices and supplier information with additional details
+    const prices = {
+      Cement: {
+        "UltraTech": { price: 325, phone: "+91-800-325-0001", rating: 4.5, description: "Premium quality cement for all construction needs" },
+        "JK Cement": { price: 310, phone: "+91-800-310-0004", rating: 4.3, description: "Durable cement with excellent binding properties" },
+        "Birla": { price: 320, phone: "+91-800-320-0005", rating: 4.4, description: "High-strength cement for structural applications" },
+        "Shree": { price: 300, phone: "+91-800-300-0006", rating: 4.2, description: "Cost-effective cement with good performance" },
+        "Ambuja": { price: 315, phone: "+91-800-315-0007", rating: 4.3, description: "Reliable cement brand with consistent quality" }
+      },
+      Bricks: {
+        "Red Bricks": { price: 5.5, phone: "+91-800-550-0002", rating: 4.0, description: "Traditional clay bricks with good thermal properties" },
+        "Fly Ash Bricks": { price: 6, phone: "+91-800-600-0004", rating: 4.2, description: "Eco-friendly bricks made from industrial waste" },
+        "Clay Bricks": { price: 5.8, phone: "+91-800-580-0005", rating: 4.1, description: "Natural clay bricks with excellent durability" },
+        "Eco Bricks": { price: 6.2, phone: "+91-800-620-0006", rating: 4.3, description: "Sustainable bricks with lower carbon footprint" },
+        "Solid Blocks": { price: 6.5, phone: "+91-800-650-0007", rating: 4.4, description: "Heavy-duty blocks for load-bearing walls" }
+      },
+      Steel: {
+        "Tata": { price: 43000, phone: "+91-800-430-0001", rating: 4.7, description: "High-grade steel with superior strength and durability" },
+        "JSW": { price: 41500, phone: "+91-800-415-0002", rating: 4.6, description: "Quality steel with excellent corrosion resistance" },
+        "SAIL": { price: 40500, phone: "+91-800-405-0003", rating: 4.5, description: "Reliable steel from India's largest steel producer" },
+        "Jindal": { price: 41000, phone: "+91-800-410-0004", rating: 4.5, description: "Premium steel with consistent quality standards" },
+        "Essar": { price: 42000, phone: "+91-800-420-0005", rating: 4.4, description: "High-performance steel for structural applications" }
+      },
+      Sand: {
+        "River Sand": { price: 1650, phone: "+91-800-165-0001", rating: 4.3, description: "Natural river sand, ideal for concrete mixing" },
+        "M-Sand": { price: 1550, phone: "+91-800-155-0002", rating: 4.2, description: "Manufactured sand, consistent alternative to river sand" },
+        "White Sand": { price: 1700, phone: "+91-800-170-0003", rating: 4.4, description: "Fine white sand for specialized construction needs" },
+        "Brick Sand": { price: 1500, phone: "+91-800-150-0004", rating: 4.0, description: "Coarse sand suitable for brickwork and masonry" },
+        "Plaster Sand": { price: 1580, phone: "+91-800-158-0005", rating: 4.1, description: "Fine-grained sand perfect for plastering work" }
+      },
+      Paint: {
+        "Asian Paints": { price: 250, phone: "+91-800-250-0001", rating: 4.6, description: "Premium quality paints with excellent coverage" },
+        "Berger": { price: 220, phone: "+91-800-220-0002", rating: 4.4, description: "Durable paints with vibrant color retention" },
+        "Nerolac": { price: 240, phone: "+91-800-240-0003", rating: 4.5, description: "High-quality paints with eco-friendly formulations" },
+        "Dulux": { price: 260, phone: "+91-800-260-0004", rating: 4.7, description: "Premium paints with advanced protection technology" },
+        "Kansai Nerolac": { price: 230, phone: "+91-800-230-0005", rating: 4.3, description: "Reliable paints with good weather resistance" }
+      }
+    };
+
+    // Units for different materials
+    const units = {
+      Cement: "bags",
+      Bricks: "pieces",
+      Steel: "tons",
+      Sand: "tons",
+      Paint: "liters"
+    };
+
+    // Array to store selected items
+    let items = [];
+
+    // Format currency
+    function formatCurrency(amount) {
+      return '₹' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    // Populate company dropdown based on selected material
+    function populateCompanies() {
+      const mat = document.getElementById('material').value;
+      const company = document.getElementById('company');
+      const unit = document.getElementById('unit');
+      company.innerHTML = '<option value="">--Select Company--</option>';
+      unit.innerHTML = '';
+      
+      if (prices[mat]) {
+        // Sort companies by price (lowest first)
+        const sortedCompanies = Object.entries(prices[mat])
+          .sort((a, b) => a[1].price - b[1].price);
+          
+        sortedCompanies.forEach(([companyName, details]) => {
+          const option = new Option(
+            `${companyName} (${formatCurrency(details.price)}/${units[mat]})`, 
+            companyName
+          );
+          option.setAttribute('data-price', details.price);
+          option.setAttribute('data-rating', details.rating);
+          company.add(option);
+        });
+        
+        unit.add(new Option(units[mat], units[mat]));
+        
+        // Show price preview if quantity is already entered
+        updatePricePreview();
+      }
+    }
+    
+    // Update price preview when company or quantity changes
+    function updatePricePreview() {
+      const material = document.getElementById('material').value;
+      const company = document.getElementById('company').value;
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      
+      if (material && company && !isNaN(quantity) && quantity > 0) {
+        const price = prices[material][company].price;
+        const total = price * quantity;
+        
+        // Show a preview of the price
+        const quantityInput = document.getElementById('quantity');
+        quantityInput.setAttribute('data-preview', `Total: ${formatCurrency(total)}`);
+        quantityInput.classList.add('has-preview');
+      }
+    }
+
+    // Add item to the list
+    function addItem() {
+      const material = document.getElementById('material').value;
+      const company = document.getElementById('company').value;
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const unit = document.getElementById('unit').value;
+      
+      if (!material || !company || isNaN(quantity) || quantity <= 0) {
+        showNotification("Please fill all fields with valid values", "error");
+        return;
+      }
+      
+      const price = prices[material][company].price;
+      const total = price * quantity;
+      
+      items.push({ 
+        material, 
+        company, 
+        quantity, 
+        unit, 
+        price, 
+        total,
+        phone: prices[material][company].phone,
+        rating: prices[material][company].rating,
+        description: prices[material][company].description
+      });
+      
+      renderTable();
+      updateItemsJson();
+      updateMaterialsSummary();
+      
+      // Show success notification
+      showNotification(`Added ${quantity} ${unit} of ${material} (${company})`, "success");
+      
+      // Reset fields for next item
+      document.getElementById('quantity').value = '';
+      document.getElementById('quantity').classList.remove('has-preview');
+    }
+
+    // Remove item from the list
+    function removeItem(index) {
+      const item = items[index];
+      items.splice(index, 1);
+      renderTable();
+      updateItemsJson();
+      updateMaterialsSummary();
+      
+      // Show notification
+      showNotification(`Removed ${item.material} (${item.company})`, "info");
+    }
+
+    // Show notification
+    function showNotification(message, type = "info") {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      
+      // Add icon based on type
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      if (type === 'error') icon = 'exclamation-circle';
+      
+      notification.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        <span>${message}</span>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      `;
+      
+      // Add to document
+      document.body.appendChild(notification);
+      
+      // Add event listener to close button
+      notification.querySelector('.close-btn').addEventListener('click', () => {
+        notification.classList.add('notification-hiding');
+        setTimeout(() => notification.remove(), 300);
+      });
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          notification.classList.add('notification-hiding');
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 5000);
+      
+      // Animate in
+      setTimeout(() => notification.classList.add('notification-visible'), 10);
+    }
+
+    // Update the hidden input with JSON data
+    function updateItemsJson() {
+      document.getElementById('itemsJson').value = JSON.stringify(items);
+    }
+    
+    // Update materials summary section
+    function updateMaterialsSummary() {
+      const summarySection = document.getElementById('materialsSummary');
+      
+      if (items.length === 0) {
+        summarySection.style.display = 'none';
+        return;
+      }
+      
+      // Calculate totals
+      const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+      const delivery = items.reduce((sum, item) => {
+        if (item.unit === 'pieces') return sum + (item.quantity / 1000) * 200;
+        else return sum + (item.quantity / 10) * 200;
+      }, 0);
+      const total = subtotal + delivery;
+      
+      // Update summary display
+      document.getElementById('itemCount').textContent = items.length;
+      document.getElementById('subtotalAmount').textContent = formatCurrency(subtotal);
+      document.getElementById('deliveryAmount').textContent = formatCurrency(delivery);
+      document.getElementById('totalAmount').textContent = formatCurrency(total);
+      
+      // Show summary section
+      summarySection.style.display = 'block';
+      
+      // Check budget status
+      const budget = parseFloat(document.getElementById('budget').value);
+      if (!isNaN(budget) && budget > 0) {
+        const totalAmount = document.getElementById('totalAmount');
+        if (total > budget) {
+          totalAmount.classList.add('highlight-over');
+          totalAmount.setAttribute('data-status', 'Over Budget');
+        } else {
+          totalAmount.classList.remove('highlight-over');
+          totalAmount.setAttribute('data-status', 'Within Budget');
+        }
+      }
+    }
+
+    // Render the items table
+    function renderTable() {
+      const tbody = document.querySelector('#itemsTable tbody');
+      tbody.innerHTML = '';
+      
+      if (items.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px;">
+              <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+              <p>No materials added yet. Use the form above to add materials.</p>
+            </td>
+          </tr>`;
+        return;
+      }
+      
+      items.forEach((item, index) => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${item.material}</strong></td>
+            <td>${item.company} <small>(${item.rating}★)</small></td>
+            <td>${item.quantity}</td>
+            <td>${item.unit}</td>
+            <td class="price-tag">${formatCurrency(item.price)}</td>
+            <td class="price-tag">${formatCurrency(item.total)}</td>
+            <td>
+              <button type="button" class="action-btn delete" onclick="removeItem(${index})" title="Remove item">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    // Generate summary and display it
+    function generateSummary() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const date = document.getElementById('date').value;
+      const budget = parseFloat(document.getElementById('budget').value);
+      
+      if (!name || !email || !phone || !date || isNaN(budget)) {
+        showNotification("Please fill all customer information fields", "error");
+        return null;
+      }
+      
+      if (items.length === 0) {
+        showNotification("Please add at least one material item", "error");
+        return null;
+      }
+
+      const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+      const delivery = items.reduce((sum, item) => {
+        if (item.unit === 'pieces') return sum + (item.quantity / 1000) * 200;
+        else return sum + (item.quantity / 10) * 200;
+      }, 0);
+
+      const total = subtotal + delivery;
+      const withinBudget = total <= budget;
+
+      // Create a more attractive summary
+      let summary = `
+        <div class="summary-section customer-info">
+          <h2><i class="fas fa-user"></i> Customer Information</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-user-tag"></i> Name:</span>
+              <span class="info-value">${name}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-envelope"></i> Email:</span>
+              <span class="info-value">${email}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-phone"></i> Phone:</span>
+              <span class="info-value">${phone}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-calendar-alt"></i> Date:</span>
+              <span class="info-value">${new Date(date).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-section materials-list">
+          <h2><i class="fas fa-list"></i> Materials</h2>
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Company</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>`;
+      
+      items.forEach(i => {
+        summary += `
+          <tr>
+            <td>${i.material}</td>
+            <td>${i.company}</td>
+            <td>${i.quantity}</td>
+            <td>${i.unit}</td>
+            <td>${formatCurrency(i.price)}</td>
+            <td>${formatCurrency(i.total)}</td>
+          </tr>`;
+      });
+      
+      summary += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary-section totals">
+          <h2><i class="fas fa-calculator"></i> Cost Summary</h2>
+          <div class="totals-grid">
+            <div class="total-item">
+              <span class="total-label">Subtotal:</span>
+              <span class="total-value">${formatCurrency(subtotal)}</span>
+            </div>
+            <div class="total-item">
+              <span class="total-label">Delivery Charges:</span>
+              <span class="total-value">${formatCurrency(delivery)}</span>
+            </div>
+            <div class="total-item total-final">
+              <span class="total-label">Total Estimate:</span>
+              <span class="total-value">${formatCurrency(total)}</span>
+            </div>
+            <div class="total-item">
+              <span class="total-label">Budget:</span>
+              <span class="total-value">${formatCurrency(budget)}</span>
+            </div>
+            <div class="total-item">
+              <span class="total-label">Status:</span>
+              <span class="total-value">
+                <span class="badge badge-${withinBudget ? 'success' : 'danger'}">
+                  ${withinBudget ? 'Within Budget' : 'Over Budget'}
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>`;
+
+      if (withinBudget) {
+        summary += `
+          <div class="summary-section supplier-suggestions">
+            <h2><i class="fas fa-thumbs-up"></i> Best Supplier Suggestions</h2>
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Best Company</th>
+                  <th>Price</th>
+                  <th>Rating</th>
+                  <th>Contact</th>
+                </tr>
+              </thead>
+              <tbody>`;
+        
+        const suggested = {};
+        items.forEach(i => {
+          if (!suggested[i.material]) {
+            const best = Object.entries(prices[i.material])
+              .sort((a,b) => a[1].price - b[1].price)[0];
+            
+            summary += `
+              <tr>
+                <td>${i.material}</td>
+                <td>${best[0]}</td>
+                <td>${formatCurrency(best[1].price)}</td>
+                <td>${best[1].rating}★</td>
+                <td>${best[1].phone}</td>
+              </tr>`;
+            
+            suggested[i.material] = true;
+          }
+        });
+        
+        summary += `
+              </tbody>
+            </table>
+          </div>`;
+      }
+
+      // Add custom styles for the summary
+      summary += `
+        <style>
+          .summary-section {
+            margin-bottom: 30px;
+            background-color: rgba(40, 40, 40, 0.7);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          .summary-section h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #fff;
+          }
+          .info-grid, .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+          }
+          .info-item, .total-item {
+            display: flex;
+            flex-direction: column;
+          }
+          .info-label, .total-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 5px;
+          }
+          .info-value, .total-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+          }
+          .total-final {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #444;
+          }
+          .total-final .total-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+          }
+          .total-final .total-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #4caf50;
+          }
+          .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+          }
+          .summary-table th, .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #444;
+          }
+          .summary-table th {
+            background-color: #333;
+            font-weight: 600;
+          }
+          .summary-table tr:nth-child(even) {
+            background-color: rgba(50, 50, 50, 0.5);
+          }
+          @media print {
+            .summary-section {
+              background-color: white;
+              color: black;
+              box-shadow: none;
+              border: 1px solid #ddd;
+            }
+            .summary-section h2 {
+              color: #333;
+              border-bottom-color: #ddd;
+            }
+            .info-label, .total-label {
+              color: #666;
+            }
+            .summary-table th, .summary-table td {
+              border-color: #ddd;
+              color: black;
+            }
+            .summary-table th {
+              background-color: #f5f5f5;
+            }
+            .summary-table tr:nth-child(even) {
+              background-color: #f9f9f9;
+            }
+          }
+        </style>`;
+
+      document.getElementById('summaryContent').innerHTML = summary;
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('summarySection').style.display = 'block';
+      
+      // Add animation class
+      document.getElementById('summarySection').classList.add('animated');
+      
+      return {
+        customerInfo: { name, email, phone, date, budget },
+        items: items,
+        totals: { subtotal, delivery, total, withinBudget }
+      };
+    }
+
+    // Submit form to server
+    function submitForm() {
+      const summaryData = generateSummary();
+      if (!summaryData) return; // Validation failed
+      
+      // Show loading indicator
+      const submitBtn = document.querySelector('.submit-btn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      submitBtn.disabled = true;
+      
+      // Submit the form
+      setTimeout(() => {
+        document.getElementById('customerForm').submit();
+      }, 800); // Small delay for better UX
+    }
+
+    // Go back to estimator form
+    function goBack() {
+      document.getElementById('formSection').style.display = 'block';
+      document.getElementById('summarySection').style.display = 'none';
+    }
+
+    // Initialize the form on page load
+    window.onload = () => {
+      // Populate material dropdown
+      const materialSelect = document.getElementById('material');
+      Object.keys(prices).forEach(mat => {
+        const option = new Option(mat, mat);
+        materialSelect.add(option);
+      });
+      
+      // Initialize table
+      renderTable();
+      
+      // Add event listeners for real-time updates
+      document.getElementById('company').addEventListener('change', updatePricePreview);
+      document.getElementById('quantity').addEventListener('input', updatePricePreview);
+      document.getElementById('budget').addEventListener('input', updateMaterialsSummary);
+      
+      // Add notification styles
+      const style = document.createElement('style');
+      style.textContent = `
+        .notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #333;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          display: flex;
+          align-items: center;
+          z-index: 1000;
+          transform: translateX(120%);
+          transition: transform 0.3s ease;
+          max-width: 350px;
+        }
+        .notification-visible {
+          transform: translateX(0);
+        }
+        .notification-hiding {
+          transform: translateX(120%);
+        }
+        .notification i {
+          margin-right: 10px;
+          font-size: 1.2rem;
+        }
+        .notification-success {
+          background-color: #388e3c;
+        }
+        .notification-error {
+          background-color: #d32f2f;
+        }
+        .notification-info {
+          background-color: #0288d1;
+        }
+        .close-btn {
+          background: transparent;
+          border: none;
+          color: white;
+          margin-left: 15px;
+          cursor: pointer;
+          padding: 0;
+          box-shadow: none;
+          width: auto;
+        }
+        .close-btn:hover {
+          color: rgba(255,255,255,0.8);
+          background: transparent;
+          transform: none;
+          box-shadow: none;
+        }
+        input.has-preview {
+          position: relative;
+        }
+        input.has-preview::after {
+          content: attr(data-preview);
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: rgba(46, 125, 50, 0.1);
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          color: #4caf50;
+          pointer-events: none;
+        }
+        .animated {
+          animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .table-responsive {
+          overflow-x: auto;
+          margin-bottom: 15px;
+        }
+        .print-btn {
+          background-color: #0288d1;
+        }
+        .print-btn:hover {
+          background-color: #039be5;
+        }
+        @media print {
+          body, html {
+            background: none;
+            color: black;
+          }
+          .container {
+            box-shadow: none;
+            margin: 0;
+            padding: 15px;
+            max-width: 100%;
+          }
+          .button-group {
+            display: none;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    };
+  </script>
+  
+  <!-- Animation and Particle Scripts -->
+  <script src="{{ url_for('static', filename='js/particles.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/animations.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/interactive.js') }}?v=1.2"></script>
+</body>
+</html>

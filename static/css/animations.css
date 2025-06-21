@@ -1,0 +1,210 @@
+/**
+ * Construction Estimator - Animations CSS
+ * Contains animation keyframes and classes
+ */
+
+/* Page entrance animation */
+.page-enter {
+  animation: fadeIn 0.8s ease forwards;
+  opacity: 0;
+}
+
+/* Section animations */
+.section-animate {
+  opacity: 1; 
+  transform: translateY(0); 
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  animation: makeVisible 0.5s ease forwards;
+}
+
+@keyframes makeVisible {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide animations */
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+.slide-down {
+  animation: slideDown 0.5s ease forwards;
+}
+
+.slide-left {
+  animation: slideLeft 0.5s ease forwards;
+}
+
+.slide-right {
+  animation: slideRight 0.5s ease forwards;
+}
+
+/* Fade animations */
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+/* Pulse animation */
+.pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Float animation */
+.float {
+  animation: float 3s infinite ease-in-out;
+}
+
+/* Rotate animation */
+.rotate {
+  animation: rotate 10s linear infinite;
+}
+
+/* Bounce animation */
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+/* Shake animation */
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Flip animation */
+.flip {
+  animation: flip 0.5s ease-in-out;
+}
+
+/* Scale animation */
+.scale {
+  animation: scale 0.5s ease-in-out;
+}
+
+/* Animate on scroll */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-on-scroll.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes flip {
+  from { transform: perspective(400px) rotateY(0); }
+  to { transform: perspective(400px) rotateY(360deg); }
+}
+
+@keyframes scale {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* Animation delays */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* Animation durations */
+.duration-1 { animation-duration: 0.5s; }
+.duration-2 { animation-duration: 1s; }
+.duration-3 { animation-duration: 1.5s; }
+.duration-4 { animation-duration: 2s; }
+.duration-5 { animation-duration: 2.5s; }
+
+/* Fix for button-group in estimate_detail.html */
+.button-group.section-animate {
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.5s forwards, makeVisible 0.5s ease forwards 0.5s;
+}
+
+/* Fix for estimate cards in estimates.html */
+.estimate-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+.estimate-card.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Media query to disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

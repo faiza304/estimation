@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estimate Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/effects.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/backgrounds.css') }}?v=1.2">
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-light: #60ad5e;
+      --primary-dark: #005005;
+      --secondary-color: #37474f;
+      --secondary-light: #62727b;
+      --secondary-dark: #102027;
+      --text-light: #ffffff;
+      --text-dark: #212121;
+      --danger-color: #d32f2f;
+      --success-color: #388e3c;
+      --warning-color: #f57c00;
+      --info-color: #0288d1;
+    }
+    
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url("{{ url_for('static', filename='images/background.jpg') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background-color: rgba(24, 24, 24, 0.9);
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-light);
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background-color: var(--primary-color);
+    }
+    
+    h2 {
+      color: var(--text-light);
+      font-weight: 500;
+      margin-top: 0;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    
+    h2 i {
+      margin-right: 10px;
+      color: var(--primary-light);
+    }
+    
+    .section {
+      background-color: rgba(40, 40, 40, 0.7);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.5s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: var(--primary-color);
+    }
+    
+    .customer-info {
+      animation-delay: 0.1s;
+    }
+    
+    .materials {
+      animation-delay: 0.2s;
+    }
+    
+    .totals {
+      animation-delay: 0.3s;
+    }
+    
+    .supplier-suggestions {
+      animation-delay: 0.4s;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .info-label {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .info-label i {
+      margin-right: 8px;
+      color: var(--primary-light);
+      width: 20px;
+      text-align: center;
+    }
+    
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    .materials-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .materials-table th, .materials-table td {
+      padding: 15px;
+      text-align: left;
+      border: 1px solid #444;
+    }
+    
+    .materials-table th {
+      background-color: var(--secondary-color);
+      color: var(--text-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .materials-table tr:nth-child(even) {
+      background-color: rgba(50, 50, 50, 0.5);
+    }
+    
+    .materials-table tr:hover {
+      background-color: rgba(70, 70, 70, 0.7);
+    }
+    
+    .price-tag {
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+    
+    .totals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .total-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .total-label {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .total-label i {
+      margin-right: 8px;
+      color: var(--primary-light);
+      width: 20px;
+      text-align: center;
+    }
+    
+    .total-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    .total-final {
+      grid-column: 1 / -1;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed #444;
+    }
+    
+    .total-final .total-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    .total-final .total-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+    
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 10px;
+    }
+    
+    .status i {
+      margin-right: 5px;
+    }
+    
+    .status-ok {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .status-over {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      animation: fadeIn 0.5s ease 0.5s forwards;
+      opacity: 0;
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    button i {
+      margin-right: 8px;
+    }
+    
+    button:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .back-button {
+      background-color: var(--secondary-color);
+    }
+    
+    .back-button:hover {
+      background-color: var(--secondary-light);
+    }
+    
+    .print-button {
+      background-color: var(--info-color);
+    }
+    
+    .print-button:hover {
+      background-color: #039be5;
+    }
+    
+    .share-button {
+      background-color: var(--warning-color);
+    }
+    
+    .share-button:hover {
+      background-color: #fb8c00;
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+    
+    .supplier-card {
+      background-color: rgba(30, 30, 30, 0.6);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .supplier-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .supplier-info {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .supplier-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      color: var(--text-light);
+    }
+    
+    .supplier-material {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+    
+    .supplier-price {
+      color: var(--primary-light);
+      font-weight: 600;
+    }
+    
+    .supplier-contact {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+    
+    .contact-btn {
+      background-color: transparent;
+      border: 1px solid var(--info-color);
+      color: var(--info-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      box-shadow: none;
+    }
+    
+    .contact-btn:hover {
+      background-color: rgba(2, 136, 209, 0.1);
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 10px;
+      background-color: var(--primary-dark);
+      color: white;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .info-grid, .totals-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .supplier-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .supplier-contact {
+        margin-left: 0;
+        margin-top: 15px;
+      }
+    }
+    
+    @media print {
+      body {
+        background: none;
+        color: black;
+      }
+      
+      .container {
+        background: white;
+        box-shadow: none;
+        margin: 0;
+        padding: 15px;
+        max-width: 100%;
+      }
+      
+      .section {
+        background: white;
+        box-shadow: none;
+        page-break-inside: avoid;
+        opacity: 1;
+        transform: none;
+      }
+      
+      .section::before {
+        display: none;
+      }
+      
+      h1, h2 {
+        color: #333;
+      }
+      
+      h2 i, .info-label i, .total-label i {
+        color: var(--primary-dark);
+      }
+      
+      .info-value, .total-value {
+        color: #333;
+      }
+      
+      .materials-table th {
+        background-color: #f5f5f5;
+        color: #333;
+      }
+      
+      .materials-table td {
+        color: #333;
+        border-color: #ddd;
+      }
+      
+      .materials-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      
+      .supplier-card {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+      }
+      
+      .supplier-name {
+        color: #333;
+      }
+      
+      .button-group {
+        display: none;
+      }
+      
+      .status {
+        border: 1px solid;
+      }
+      
+      .status-ok {
+        background-color: transparent;
+        color: var(--success-color);
+        border-color: var(--success-color);
+      }
+      
+      .status-over {
+        background-color: transparent;
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+      }
+      
+      .price-tag, .supplier-price {
+        color: var(--primary-dark);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container page-enter gradient-bg">
+    <h1><i class="fas fa-file-invoice"></i> <span class="text-shimmer">Estimate Details</span></h1>
+    
+    <div class="section customer-info section-animate glass-effect">
+      <h2><i class="fas fa-user"></i> Customer Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label"><i class="fas fa-user-tag"></i> Name</span>
+          <span class="info-value">{{ estimate['customer_info']['name'] }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
+          <span class="info-value">{{ estimate['customer_info']['email'] }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
+          <span class="info-value">{{ estimate['customer_info']['phone'] }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fas fa-calendar-alt"></i> Date</span>
+          <span class="info-value">{{ estimate['customer_info']['date'] }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fas fa-rupee-sign"></i> Budget</span>
+          <span class="info-value price-tag">₹{{ estimate['customer_info']['budget']|round(2)|number_format }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section materials section-animate glass-effect">
+      <h2><i class="fas fa-tools"></i> Materials</h2>
+      <div class="table-responsive">
+        <table class="materials-table">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Company</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th>Price (₹)</th>
+              <th>Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in estimate['items'] %}
+              <tr>
+                <td><strong>{{ item.material }}</strong></td>
+                <td>{{ item.company }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit }}</td>
+                <td class="price-tag">₹{{ item.price|number_format }}</td>
+                <td class="price-tag">₹{{ item.total|round(2)|number_format }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="section totals section-animate glass-effect">
+      <h2><i class="fas fa-calculator"></i> Cost Summary</h2>
+      <div class="totals-grid">
+        <div class="total-item">
+          <span class="total-label"><i class="fas fa-shopping-cart"></i> Subtotal</span>
+          <span class="total-value">₹{{ estimate['totals']['subtotal']|round(2)|number_format }}</span>
+        </div>
+        <div class="total-item">
+          <span class="total-label"><i class="fas fa-truck"></i> Delivery Charges</span>
+          <span class="total-value">₹{{ estimate['totals']['delivery']|round(2)|number_format }}</span>
+        </div>
+        <div class="total-item total-final">
+          <span class="total-label"><i class="fas fa-file-invoice-dollar"></i> Total Estimate</span>
+          <span class="total-value">₹{{ estimate['totals']['total']|round(2)|number_format }}</span>
+          <span class="status {% if estimate['totals']['within_budget'] %}status-ok{% else %}status-over{% endif %}">
+            {% if estimate['totals']['within_budget'] %}
+              <i class="fas fa-check-circle"></i> Within Budget
+            {% else %}
+              <i class="fas fa-exclamation-circle"></i> Over Budget
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; height: 150px;">
+        <canvas id="budgetChart"></canvas>
+      </div>
+    </div>
+    
+    {% if estimate['totals']['within_budget'] %}
+      <div class="section supplier-suggestions section-animate glass-effect">
+        <h2><i class="fas fa-thumbs-up"></i> Best Supplier Suggestions</h2>
+        <div class="supplier-list">
+          {% for material in estimate['best_suppliers'] %}
+            <div class="supplier-card hover-scale-up">
+              <div class="supplier-info">
+                <div class="supplier-name">{{ material.company }} <span class="badge">Best Price</span></div>
+                <div class="supplier-material">{{ material.material }}</div>
+                <div class="supplier-price">₹{{ material.price|number_format }} per unit</div>
+              </div>
+              <div class="supplier-contact">
+                <a href="tel:{{ material.phone }}" class="contact-btn ripple hover-glow">
+                  <i class="fas fa-phone"></i> {{ material.phone }}
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    
+    <div class="button-group section-animate">
+      <button onclick="window.location.href='{{ url_for('view_estimates') }}';" class="back-button ripple">
+        <i class="fas fa-arrow-left"></i> Back to All Estimates
+      </button>
+      <button onclick="window.print();" class="print-button ripple">
+        <i class="fas fa-print"></i> Print Estimate
+      </button>
+      <button onclick="shareEstimate();" class="share-button ripple">
+        <i class="fas fa-share-alt icon-pulse"></i> Share Estimate
+      </button>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Format currency values
+      const formatCurrency = (amount) => {
+        return '₹' + parseFloat(amount).toLocaleString('en-IN', {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2
+        });
+      };
+      
+      // Format all currency values
+      const currencyElements = document.querySelectorAll('.price-tag, .total-value');
+      currencyElements.forEach(el => {
+        const text = el.textContent;
+        if (text.includes('₹')) {
+          const value = parseFloat(text.replace('₹', '').replace(/,/g, ''));
+          if (!isNaN(value)) {
+            el.textContent = formatCurrency(value);
+          }
+        }
+      });
+      
+      // Create budget comparison chart
+      try {
+        const budget = {{ estimate['customer_info']['budget'] }};
+        const total = {{ estimate['totals']['total'] }};
+        const withinBudget = {{ 'true' if estimate['totals']['within_budget'] else 'false' }};
+        
+        console.log('Budget:', budget);
+        console.log('Total:', total);
+        console.log('Within Budget:', withinBudget);
+        
+        const ctx = document.getElementById('budgetChart');
+        console.log('Chart element found:', ctx ? 'Yes' : 'No');
+        
+        if (ctx && typeof Chart !== 'undefined') {
+          console.log('Creating chart...');
+          
+          // Create a simple chart first to test
+          const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['Budget', 'Estimate'],
+              datasets: [{
+                label: 'Amount (₹)',
+                data: [budget, total],
+                backgroundColor: [
+                  '#388e3c',
+                  withinBudget ? '#60ad5e' : '#d32f2f'
+                ],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false
+            }
+          });
+          
+          console.log('Chart created successfully');
+        } else {
+          console.error('Cannot create chart: Chart.js not loaded or canvas element not found');
+          
+          // Create a fallback display
+          if (ctx) {
+            try {
+              const fallbackDiv = document.createElement('div');
+              fallbackDiv.style.height = '100px';
+              fallbackDiv.style.display = 'flex';
+              fallbackDiv.style.alignItems = 'center';
+              fallbackDiv.style.justifyContent = 'space-around';
+              
+              const budgetDiv = document.createElement('div');
+              budgetDiv.innerHTML = `<strong>Budget:</strong> ₹${budget.toLocaleString('en-IN')}`;
+              budgetDiv.style.padding = '10px';
+              budgetDiv.style.backgroundColor = '#388e3c';
+              budgetDiv.style.borderRadius = '5px';
+              
+              const totalDiv = document.createElement('div');
+              totalDiv.innerHTML = `<strong>Total:</strong> ₹${total.toLocaleString('en-IN')}`;
+              totalDiv.style.padding = '10px';
+              totalDiv.style.backgroundColor = withinBudget ? '#60ad5e' : '#d32f2f';
+              totalDiv.style.borderRadius = '5px';
+              
+              fallbackDiv.appendChild(budgetDiv);
+              fallbackDiv.appendChild(totalDiv);
+              
+              // Replace the canvas with our fallback
+              ctx.parentNode.replaceChild(fallbackDiv, ctx);
+            } catch (error) {
+              console.error('Error creating fallback display:', error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error creating chart:', error);
+      }
+    });
+    
+    // Share functionality
+    function shareEstimate() {
+      // Create share data
+      const shareData = {
+        title: 'Construction Estimate',
+        text: 'Check out my construction estimate for {{ estimate['customer_info']['name'] }}',
+        url: window.location.href
+      };
+      
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        navigator.share(shareData)
+          .then(() => console.log('Shared successfully'))
+          .catch((error) => console.log('Error sharing:', error));
+      } else {
+        // Fallback - copy to clipboard
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = window.location.href;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        // Show notification
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.backgroundColor = '#388e3c';
+        notification.style.color = 'white';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '1000';
+        notification.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 8px;"></i> Link copied to clipboard!';
+        
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+    }
+  </script>
+  
+  <!-- Animation and Particle Scripts -->
+  <script src="{{ url_for('static', filename='js/particles.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/animations.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/interactive.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/debug.js') }}?v=1.2"></script>
+  
+  <!-- Emergency content display -->
+  <style>
+    /* Emergency override styles to ensure content is visible */
+    body * {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    .container, .customer-info, .materials, .totals, .supplier-suggestions,
+    .info-grid, .materials-table, .totals-grid, .supplier-list,
+    .section-animate, .animate-on-scroll {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
+    
+    table, tr, td, th {
+      display: table !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    tr {
+      display: table-row !important;
+    }
+    
+    td, th {
+      display: table-cell !important;
+    }
+    
+    .info-grid, .totals-grid {
+      display: grid !important;
+    }
+    
+    /* Add a border to help visualize content areas */
+    .customer-info, .materials, .totals, .supplier-suggestions {
+      border: 2px solid #444 !important;
+      margin-bottom: 20px !important;
+      padding: 15px !important;
+    }
+  </style>
+
+  <!-- Debug information -->
+  <script>
+    // Store estimate data in a global variable
+    const estimate = {{ estimate|tojson|safe }};
+    
+    // Immediately execute to ensure content is visible
+    (function() {
+      console.log("Estimate data:", estimate);
+      
+      // Force all elements to be visible
+      document.querySelectorAll('*').forEach(el => {
+        el.style.opacity = '1';
+        el.style.visibility = 'visible';
+        
+        // Remove any animations or transitions
+        el.style.animation = 'none';
+        el.style.transition = 'none';
+        el.style.transform = 'none';
+      });
+    })();
+    
+    // Add debug overlay when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM fully loaded");
+      
+      // Force sections to be visible immediately (fix for animation issues)
+      const sections = document.querySelectorAll('.section-animate');
+      sections.forEach(section => {
+        section.style.opacity = '1';
+        section.style.visibility = 'visible';
+        section.style.display = 'block';
+        section.style.transform = 'none';
+        section.style.animation = 'none';
+        section.style.transition = 'none';
+      });
+      
+      // Force all content to be visible
+      document.querySelectorAll('.info-grid, .materials-table, .totals-grid, .supplier-list').forEach(el => {
+        el.style.opacity = '1';
+        el.style.visibility = 'visible';
+        el.style.display = el.tagName === 'TABLE' ? 'table' : 'grid';
+        el.style.animation = 'none';
+        el.style.transition = 'none';
+      });
+      
+      // Make sure table rows are visible
+      document.querySelectorAll('tr, td, th').forEach(el => {
+        el.style.opacity = '1';
+        el.style.visibility = 'visible';
+        el.style.display = el.tagName === 'TR' ? 'table-row' : 'table-cell';
+      });
+      
+      // Create emergency content display if container is empty
+      const container = document.querySelector('.container');
+      if (container && (!container.innerHTML.trim() || container.offsetHeight < 100)) {
+        console.log("Container appears empty, creating emergency content");
+        
+        // Create emergency content
+        const emergencyContent = document.createElement('div');
+        emergencyContent.style.padding = '20px';
+        emergencyContent.style.backgroundColor = '#333';
+        emergencyContent.style.color = 'white';
+        emergencyContent.style.border = '2px solid red';
+        
+        let contentHTML = '<h2>Emergency Content Display</h2>';
+        
+        if (estimate) {
+          contentHTML += `
+            <h3>Customer Information</h3>
+            <p>Name: ${estimate.customer_info.name}</p>
+            <p>Email: ${estimate.customer_info.email}</p>
+            <p>Phone: ${estimate.customer_info.phone}</p>
+            <p>Date: ${estimate.customer_info.date}</p>
+            <p>Budget: ₹${estimate.customer_info.budget}</p>
+            
+            <h3>Materials</h3>
+            <table border="1" style="width:100%; border-collapse: collapse;">
+              <tr>
+                <th>Material</th>
+                <th>Company</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+          `;
+          
+          estimate.items.forEach(item => {
+            contentHTML += `
+              <tr>
+                <td>${item.material}</td>
+                <td>${item.company}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unit}</td>
+                <td>₹${item.price}</td>
+                <td>₹${item.total}</td>
+              </tr>
+            `;
+          });
+          
+          contentHTML += `
+            </table>
+            
+            <h3>Totals</h3>
+            <p>Subtotal: ₹${estimate.totals.subtotal}</p>
+            <p>Delivery: ₹${estimate.totals.delivery}</p>
+            <p>Total: ₹${estimate.totals.total}</p>
+            <p>Within Budget: ${estimate.totals.within_budget ? 'Yes' : 'No'}</p>
+          `;
+          
+          if (estimate.best_suppliers) {
+            contentHTML += `
+              <h3>Best Suppliers</h3>
+              <table border="1" style="width:100%; border-collapse: collapse;">
+                <tr>
+                  <th>Material</th>
+                  <th>Company</th>
+                  <th>Price</th>
+                  <th>Phone</th>
+                </tr>
+            `;
+            
+            estimate.best_suppliers.forEach(supplier => {
+              contentHTML += `
+                <tr>
+                  <td>${supplier.material}</td>
+                  <td>${supplier.company}</td>
+                  <td>₹${supplier.price}</td>
+                  <td>${supplier.phone}</td>
+                </tr>
+              `;
+            });
+            
+            contentHTML += '</table>';
+          }
+        } else {
+          contentHTML += '<p>No estimate data available</p>';
+        }
+        
+        emergencyContent.innerHTML = contentHTML;
+        container.appendChild(emergencyContent);
+      }
+      
+      // Create debug overlay
+      const debugOverlay = document.createElement('div');
+      debugOverlay.style.position = 'fixed';
+      debugOverlay.style.top = '10px';
+      debugOverlay.style.right = '10px';
+      debugOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+      debugOverlay.style.color = 'white';
+      debugOverlay.style.padding = '10px';
+      debugOverlay.style.borderRadius = '5px';
+      debugOverlay.style.zIndex = '9999';
+      debugOverlay.style.maxWidth = '300px';
+      debugOverlay.style.maxHeight = '80vh';
+      debugOverlay.style.overflow = 'auto';
+      debugOverlay.style.fontSize = '12px';
+      debugOverlay.style.fontFamily = 'monospace';
+      debugOverlay.style.border = '1px solid #666';
+      
+      // Add debug info
+      debugOverlay.innerHTML = `
+        <strong>Debug Info:</strong><br>
+        <button onclick="document.location.reload()" style="margin: 5px 0; padding: 5px;">Reload Page</button><br>
+        Chart.js loaded: ${typeof Chart !== 'undefined' ? 'Yes' : 'No'}<br>
+        Estimate data: ${estimate ? 'Available' : 'Not available'}<br>
+        Budget: ${estimate && estimate.customer_info ? estimate.customer_info.budget : 'N/A'}<br>
+        Total: ${estimate && estimate.totals ? estimate.totals.total : 'N/A'}<br>
+        Within Budget: ${estimate && estimate.totals ? estimate.totals.within_budget : 'N/A'}<br>
+        Items: ${estimate && estimate.items ? estimate.items.length : 'N/A'}<br>
+        Container visible: ${document.querySelector('.container') ? 'Yes' : 'No'}<br>
+        Container height: ${document.querySelector('.container') ? document.querySelector('.container').offsetHeight + 'px' : 'N/A'}<br>
+        <button onclick="this.parentNode.style.display='none'" style="padding: 2px 5px; margin-top: 5px; font-size: 10px;">Close</button>
+      `;
+      
+      document.body.appendChild(debugOverlay);
+    });
+    
+    // Backup plan - if content still not visible after 1 second
+    setTimeout(function() {
+      const container = document.querySelector('.container');
+      if (container && (!container.innerHTML.trim() || container.offsetHeight < 100)) {
+        console.log("Container still appears empty after timeout, forcing content display");
+        
+        // Force display of all content
+        document.body.innerHTML = `
+          <div style="padding: 20px; background-color: #333; color: white;">
+            <h1>Estimate Details (Emergency Display)</h1>
+            <pre style="background-color: #222; padding: 15px; overflow: auto; max-height: 80vh;">${JSON.stringify(estimate, null, 2)}</pre>
+            <button onclick="document.location.reload()">Reload Page</button>
+          </div>
+        `;
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

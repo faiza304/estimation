@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Construction Estimates</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/effects.css') }}?v=1.2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/backgrounds.css') }}?v=1.2">
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-light: #60ad5e;
+      --primary-dark: #005005;
+      --secondary-color: #37474f;
+      --secondary-light: #62727b;
+      --secondary-dark: #102027;
+      --text-light: #ffffff;
+      --text-dark: #212121;
+      --danger-color: #d32f2f;
+      --success-color: #388e3c;
+      --warning-color: #f57c00;
+      --info-color: #0288d1;
+    }
+    
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url("{{ url_for('static', filename='images/background.jpg') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background-color: rgba(24, 24, 24, 0.9);
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-light);
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background-color: var(--primary-color);
+    }
+    
+    .estimate-card {
+      background-color: rgba(40, 40, 40, 0.7);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .estimate-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .estimate-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: var(--primary-color);
+    }
+    
+    .estimate-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border-bottom: 1px solid #444;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .customer-info h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    
+    .customer-info p {
+      margin: 5px 0;
+      color: #ccc;
+    }
+    
+    .customer-info i {
+      width: 20px;
+      color: var(--primary-light);
+      margin-right: 5px;
+    }
+    
+    .estimate-meta {
+      text-align: right;
+    }
+    
+    .price-tag {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+    }
+    
+    .status-ok {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .status-over {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .estimate-details {
+      margin-top: 20px;
+    }
+    
+    .estimate-details h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: 500;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+    }
+    
+    .estimate-details h4 i {
+      margin-right: 8px;
+      color: var(--primary-light);
+    }
+    
+    .materials-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .materials-table th, .materials-table td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .materials-table th {
+      background-color: var(--secondary-color);
+      color: var(--text-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .materials-table tr:nth-child(even) {
+      background-color: rgba(50, 50, 50, 0.5);
+    }
+    
+    .materials-table tr:hover {
+      background-color: rgba(70, 70, 70, 0.7);
+    }
+    
+    .estimate-summary {
+      background-color: rgba(30, 30, 30, 0.6);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .summary-label {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 5px;
+    }
+    
+    .summary-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    .summary-value.highlight {
+      color: var(--primary-light);
+      font-weight: 600;
+    }
+    
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    button i {
+      margin-right: 8px;
+    }
+    
+    button:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .view-btn {
+      background-color: var(--info-color);
+    }
+    
+    .view-btn:hover {
+      background-color: #039be5;
+    }
+    
+    .no-estimates {
+      text-align: center;
+      padding: 60px 30px;
+      background-color: rgba(40, 40, 40, 0.7);
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    
+    .no-estimates i {
+      font-size: 4rem;
+      color: #555;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .no-estimates p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+    
+    .flash-message {
+      padding: 15px;
+      margin: 0 0 25px 0;
+      border-radius: 8px;
+      background-color: var(--success-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .flash-message i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .estimate-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: flex-end;
+    }
+    
+    .action-btn {
+      background-color: transparent;
+      color: var(--text-light);
+      border: 1px solid #444;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      box-shadow: none;
+    }
+    
+    .action-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .action-btn.view {
+      border-color: var(--info-color);
+      color: var(--info-color);
+    }
+    
+    .action-btn.view:hover {
+      background-color: rgba(2, 136, 209, 0.1);
+    }
+    
+    .action-btn.print {
+      border-color: var(--warning-color);
+      color: var(--warning-color);
+    }
+    
+    .action-btn.print:hover {
+      background-color: rgba(245, 124, 0, 0.1);
+    }
+    
+    .estimate-card.collapsed .estimate-details {
+      display: none;
+    }
+    
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      box-shadow: none;
+    }
+    
+    .toggle-btn:hover {
+      color: var(--text-light);
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .estimate-header {
+        flex-direction: column;
+      }
+      
+      .estimate-meta {
+        text-align: left;
+        margin-top: 15px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+  </style>
+</head>
+<body>
+  <div class="container page-enter gradient-bg">
+    <h1><i class="fas fa-clipboard-list"></i> <span class="text-shimmer">Construction Estimates</span></h1>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash-message">
+            <i class="fas fa-check-circle"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    {% if estimates %}
+      <div class="estimates-container">
+        {% for estimate in estimates %}
+          <div class="estimate-card section-animate glass-effect" style="animation-delay: {{ loop.index0 * 0.1 }}s" id="estimate-{{ estimate['_id'] }}">
+            <button type="button" class="toggle-btn" onclick="toggleEstimate('{{ estimate['_id'] }}')">
+              <i class="fas fa-chevron-up" id="toggle-icon-{{ estimate['_id'] }}"></i>
+            </button>
+            
+            <div class="estimate-header">
+              <div class="customer-info">
+                <h3>{{ estimate['customer_info']['name'] }}</h3>
+                <p><i class="fas fa-envelope"></i> {{ estimate['customer_info']['email'] }}</p>
+                <p><i class="fas fa-phone"></i> {{ estimate['customer_info']['phone'] }}</p>
+                <p><i class="fas fa-calendar-alt"></i> {{ estimate['customer_info']['date'] }}</p>
+              </div>
+              
+              <div class="estimate-meta">
+                <p><span class="summary-label">Budget:</span> <span class="price-tag">₹{{ estimate['customer_info']['budget']|round(2)|number_format }}</span></p>
+                <p><span class="summary-label">Total:</span> <span class="price-tag {% if not estimate['totals']['within_budget'] %}highlight-over{% endif %}">₹{{ estimate['totals']['total']|round(2)|number_format }}</span></p>
+                <p>
+                  <span class="status {% if estimate['totals']['within_budget'] %}status-ok{% else %}status-over{% endif %}">
+                    {% if estimate['totals']['within_budget'] %}<i class="fas fa-check-circle"></i> Within Budget{% else %}<i class="fas fa-exclamation-circle"></i> Over Budget{% endif %}
+                  </span>
+                </p>
+              </div>
+            </div>
+            
+            <div class="estimate-details">
+              <h4><i class="fas fa-tools"></i> Materials</h4>
+              <div class="table-responsive">
+                <table class="materials-table">
+                  <thead>
+                    <tr>
+                      <th>Material</th>
+                      <th>Company</th>
+                      <th>Quantity</th>
+                      <th>Unit</th>
+                      <th>Price</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in estimate['items'] %}
+                      <tr>
+                        <td><strong>{{ item.material }}</strong></td>
+                        <td>{{ item.company }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>₹{{ item.price|number_format }}</td>
+                        <td>₹{{ item.total|round(2)|number_format }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="estimate-summary">
+                <h4><i class="fas fa-calculator"></i> Cost Summary</h4>
+                <div class="summary-grid">
+                  <div class="summary-item">
+                    <span class="summary-label">Subtotal:</span>
+                    <span class="summary-value">₹{{ estimate['totals']['subtotal']|round(2)|number_format }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Delivery Charges:</span>
+                    <span class="summary-value">₹{{ estimate['totals']['delivery']|round(2)|number_format }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="summary-label">Total Estimate:</span>
+                    <span class="summary-value highlight">₹{{ estimate['totals']['total']|round(2)|number_format }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="estimate-actions">
+                <a href="{{ url_for('view_estimate', estimate_id=estimate['_id']) }}" class="action-btn view hover-scale-up ripple">
+                  <i class="fas fa-eye"></i> View Details
+                </a>
+                <button onclick="printEstimate('{{ estimate['_id'] }}')" class="action-btn print hover-scale-up ripple">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="no-estimates section-animate glass-effect">
+        <i class="fas fa-clipboard float"></i>
+        <p>No estimates found yet.</p>
+        <button onclick="window.location.href='{{ url_for('index') }}'" class="create-btn pulse">
+          <i class="fas fa-plus-circle"></i> Create Your First Estimate
+        </button>
+      </div>
+    {% endif %}
+    
+    <div class="button-group section-animate">
+      <button onclick="window.location.href='{{ url_for('index') }}'" class="pulse ripple">
+        <i class="fas fa-plus-circle icon-pulse"></i> Create New Estimate
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Function to toggle estimate details
+    function toggleEstimate(id) {
+      const card = document.getElementById(`estimate-${id}`);
+      const icon = document.getElementById(`toggle-icon-${id}`);
+      
+      card.classList.toggle('collapsed');
+      
+      if (card.classList.contains('collapsed')) {
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+      } else {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+      }
+    }
+    
+    // Function to print a specific estimate
+    function printEstimate(id) {
+      const estimateCard = document.getElementById(`estimate-${id}`);
+      const allCards = document.querySelectorAll('.estimate-card');
+      const container = document.querySelector('.container');
+      const buttonGroup = document.querySelector('.button-group');
+      const originalTitle = document.title;
+      
+      // Hide all other cards and the button group
+      allCards.forEach(card => {
+        if (card.id !== `estimate-${id}`) {
+          card.style.display = 'none';
+        }
+      });
+      buttonGroup.style.display = 'none';
+      
+      // Add print-specific styles
+      const style = document.createElement('style');
+      style.id = 'print-style';
+      style.textContent = `
+        @media print {
+          body, html {
+            background: none;
+            color: black;
+          }
+          .container {
+            background: white;
+            box-shadow: none;
+            margin: 0;
+            padding: 15px;
+            max-width: 100%;
+          }
+          .estimate-card {
+            background: white;
+            box-shadow: none;
+            transform: none !important;
+          }
+          .estimate-card::before {
+            display: none;
+          }
+          .toggle-btn, .estimate-actions {
+            display: none;
+          }
+          .customer-info p, .estimate-meta p {
+            color: #333;
+          }
+          .customer-info i, .estimate-details h4 i {
+            color: #2e7d32;
+          }
+          .materials-table th {
+            background-color: #f5f5f5;
+            color: #333;
+          }
+          .materials-table td {
+            color: #333;
+            border-color: #ddd;
+          }
+          .materials-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          .estimate-summary {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+          }
+          .summary-label {
+            color: #666;
+          }
+          .summary-value {
+            color: #333;
+          }
+          h1, h3, h4 {
+            color: #333;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Change document title
+      document.title = `Estimate - ${id}`;
+      
+      // Print the page
+      setTimeout(() => {
+        window.print();
+        
+        // Restore the page after printing
+        allCards.forEach(card => {
+          card.style.display = '';
+        });
+        buttonGroup.style.display = '';
+        document.getElementById('print-style').remove();
+        document.title = originalTitle;
+      }, 100);
+    }
+    
+    // Add number formatting filter for currency
+    document.addEventListener('DOMContentLoaded', function() {
+      // Format all currency values
+      const currencyElements = document.querySelectorAll('.price-tag, .summary-value');
+      currencyElements.forEach(el => {
+        const text = el.textContent;
+        if (text.includes('₹')) {
+          const value = parseFloat(text.replace('₹', '').replace(/,/g, ''));
+          if (!isNaN(value)) {
+            el.textContent = '₹' + value.toLocaleString('en-IN');
+          }
+        }
+      });
+    });
+  </script>
+  
+  <!-- Animation and Particle Scripts -->
+  <script src="{{ url_for('static', filename='js/particles.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/animations.js') }}?v=1.2"></script>
+  <script src="{{ url_for('static', filename='js/interactive.js') }}?v=1.2"></script>
+</body>
+</html>
